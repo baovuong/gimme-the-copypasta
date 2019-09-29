@@ -15,14 +15,16 @@ namespace GimmeTheCopyPasta
             IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true, true)
                 .Build();
-            
 
-            var secret = config["secret"];
             var appId = config["appId"];
+            var secret = config["secret"];
 
-            var reddit = new RedditAPI(appId: appId, appSecret: secret);
 
-            var results = reddit.Subreddit("copypasta").Posts.Best;
+            var reddit = new RedditAPI(appId);
+
+            var subreddit = reddit.Subreddit("AskReddit").About();
+
+            var results = subreddit.Posts.Top;
             foreach (var result in results)
             {
                 Console.WriteLine(result.Title);

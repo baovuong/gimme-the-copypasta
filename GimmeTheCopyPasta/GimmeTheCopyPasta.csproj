@@ -8,9 +8,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
     <PackageReference Include="Reddit" Version="1.2.0" />
-    <none remove="appsettings.json"/>
-    <content include="appsettings.json">
-      <copytooutputdirectory>Always</copytooutputdirectory>
-    </content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
