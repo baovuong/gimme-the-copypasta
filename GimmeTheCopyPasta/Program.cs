@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
-using Reddit;
+using RedditSharp;
+using RedditSharp.Things;
 
 namespace GimmeTheCopyPasta
 {
@@ -16,18 +18,17 @@ namespace GimmeTheCopyPasta
                 .AddJsonFile("appsettings.json", true, true)
                 .Build();
 
-            var appId = config["appId"];
-            var secret = config["secret"];
+            var username = config["username"];
+            var password = config["password"];
 
+            var reddit = new Reddit();
+            reddit.LogIn(username, password);
+            var subreddit = reddit.GetSubreddit("copypasta");
+            var posts = subreddit.GetTop(FromTime.All).OrderBy(a => Guid.NewGuid()).ToList();
 
-            var reddit = new RedditAPI(appId);
-
-            var subreddit = reddit.Subreddit("AskReddit").About();
-
-            var results = subreddit.Posts.Top;
-            foreach (var result in results)
+            foreach (var post in posts.Take(20))
             {
-                Console.WriteLine(result.Title);
+                Console.WriteLine(post.Title);
             }
         }
     }
