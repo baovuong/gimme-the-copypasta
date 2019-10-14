@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
-using RedditSharp;
-using RedditSharp.Things;
+using RestSharp;
 
 namespace GimmeTheCopyPasta
 {
@@ -11,25 +11,23 @@ namespace GimmeTheCopyPasta
     {
         static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
-            IConfiguration config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true, true)
-                .Build();
+            GetPosts("hot", 10).Data.Children
+                .Select(c => c.Data.Selftext)
+                .ToList()
+                .ForEach(c => Console.WriteLine(c));
+        }
 
-            var username = config["username"];
-            var password = config["password"];
+        static Posts GetPosts(string type = "top", int limit = 100)
+        {
+            var client = new RestClient("https://www.reddit.com");
 
-            var reddit = new Reddit();
-            reddit.LogIn(username, password);
-            var subreddit = reddit.GetSubreddit("copypasta");
-            var posts = subreddit.GetTop(FromTime.All).OrderBy(a => Guid.NewGuid()).ToList();
+            var request = new RestRequest("r/copypasta/" + type + ".json", Method.GET);
+            request.AddQueryParameter("limit", limit.ToString());
+            request.AddQueryParameter("t", "all");
 
-            foreach (var post in posts.Take(20))
-            {
-                Console.WriteLine(post.Title);
-            }
+            var response = client.Execute(request);
+
+            return Posts.FromJson(response.Content);
         }
     }
 }
