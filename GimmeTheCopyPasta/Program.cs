@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 using RestSharp;
 
 namespace GimmeTheCopyPasta
@@ -11,10 +9,16 @@ namespace GimmeTheCopyPasta
     {
         static void Main(string[] args)
         {
-            GetPosts("hot", 10).Data.Children
-                .Select(c => c.Data.Selftext)
-                .ToList()
-                .ForEach(c => Console.WriteLine(c));
+            Console.WriteLine(GetRandomPost().Data.Selftext);
+        }
+
+        static Child GetRandomPost(string type = "top")
+        {
+            return GetPosts(type, 100).Data.Children
+                .AsEnumerable()
+                .Where(c => c.Data.Selftext.Length > 0)
+                .RandomShuffle()
+                .FirstOrDefault();
         }
 
         static Posts GetPosts(string type = "top", int limit = 100)
@@ -29,5 +33,6 @@ namespace GimmeTheCopyPasta
 
             return Posts.FromJson(response.Content);
         }
+
     }
 }
